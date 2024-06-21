@@ -1,8 +1,9 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const MONGO_URL = 'mongodb://127.0.0.1:27017/test';
+const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+
 main()
     .then(() => {
         console.log("connected to DB");
