@@ -2,7 +2,7 @@
 <div class = "row">
     <div class = "col-8 offset-2">
         <body>
-            <h3>Create new Listing</h3>
+            <h3 class = "mt-3">Create new Listing</h3>
             <form method = "POST" action = "/listings">
                 <div class = "mb-3">
                     <label for = "title" class = "form-label">Title</label>
@@ -10,7 +10,7 @@
                 </div>
                 <div class = "mb-3">
                     <label for = "description" class = "form-label">Description</label>
-                    <textarea id = "description" name = "listing[description]" type = "text" class = "form-control" placeholder="enter Description"></textarea>
+                    <textarea id = "description" name = "listing[description]" type = "text" class = "form-control"></textarea>
                 </div>
                 <div class = "mb-3">
                     <label for = "image" class = "form-label">Image URL/Link</label>
@@ -30,8 +30,7 @@
                     <label for = "location" class = "form-label">Location</label>
                     <input id = "location" name = "listing[location]" placeholder =  "Jaipur, Rajasthan" type = "text" class = "form-control"/>
                 </div>
-                <br/><br/>
-                <button class = "btn btn-dark add-btn">Add</button>
+                <button class = "btn btn-dark add-btn mt-3">Add</button>
                 <br/><br/>
             </form>
         </body>
