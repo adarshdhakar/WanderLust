@@ -7,6 +7,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
+const { listingSchema } = require("./schema.js");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -34,6 +35,17 @@ app.get("/", (req, res) => {
     res.send("Hi, I am root");
 });
 
+const validateListing = ((req, res, next) => {
+    let {error} = listingSchema.validate(req.body);
+    if(error){
+        let errMsg = error.details.map((el) => el.message).join(",");
+        throw new ExpressError(400, errMsg);
+    }
+    else {
+        next();
+    }
+});
+
 //Index Route
 app.get("/listings", wrapAsync(async (req, res, next) => {
     const allListings = await Listing.find({});
@@ -48,13 +60,22 @@ app.get("/listings/new", (req,res) => {
 });
 
 //Create Route
-app.post("/listings", async(req, res, next) => {
+app.post("/listings", validateListing, async(req, res, next) => {
     try {
         if(!req.body.listing){
             throw new ExpressError(400, "Send valid data for listing");
         }
         // let {title, description, image, price, country, location} = req.body;
         const newListing = new Listing(req.body.listing);
+        // if(!newListing.title){
+        //     throw new ExpressError(400, "Title is missing");
+        // }
+        // if(!newListing.description){
+        //     throw new ExpressError(400, "Description is missing");
+        // }
+        // if(!newListing.location){
+        //     throw new ExpressError(400, "Location is missing");
+        // }
         await newListing.save();
         res.redirect("/listings");
     }
@@ -83,10 +104,10 @@ app.get("/listings/:id/edit", async (req, res, next) => {
 });
 
 //Update Route
-app.put("/listings/:id", wrapAsync(async (req, res, next) => {
-    if(!req.body.listing){
-        throw new ExpressError(400, "Send valid data for listing");
-    }
+app.put("/listings/:id", validateListing, wrapAsync(async (req, res, next) => {
+    // if(!req.body.listing){
+    //     throw new ExpressError(400, "Send valid data for listing");
+    // }
     let {id} = req.params;
     await Listing.findByIdAndUpdate(id, {...req.body.listing});
     res.redirect(`/listings/${id}`);
@@ -120,8 +141,10 @@ app.all("*", (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-    let { statusCode=500, message="Something went wrong!x" } = err;
-    res.status(statusCode).send(message);
+    let { statusCode=500, message="Something went wrong!" } = err;
+    // res.render("listings/error.ejs", {err});
+    res.status(statusCode).render("listings/error.ejs", {err});
+    // res.status(statusCode).send(message);
     // res.send("something went wrong!");
 });
 
