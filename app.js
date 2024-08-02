@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const Listing = require("./models/listing.js");
+const Review = require("./models/review.js");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
@@ -120,6 +121,22 @@ app.delete("/listings/:id", wrapAsync(async (req, res, next) => {
     console.log(deletedListing);
     res.redirect("/listings");
 }));
+
+//Reviews
+//Post Route
+app.post("/listings/:id/review", async (req, res) => {
+    let listing = await Listing.findById(req.params.id);
+    let newReview = new Review(req.body.review);
+
+    listing.reviews.push(newReview);
+
+    await newReview.save();
+    await listing.save();
+
+    res.redirect(`/listings/${listing._id}`);
+    // console.log("new review saved");
+    // res.send("new review saved");
+});
 
 //Test Route
 app.get("/testListing", async (req, res) => {
